@@ -1,6 +1,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { useState } from "react";
 import styles from "../../css/clients.module.css";
+import { Link } from "@inertiajs/react";
 export default function Client({ auth, clients }) {
     const [search, setSearch] = useState("");
 
@@ -53,13 +54,13 @@ export default function Client({ auth, clients }) {
                                 <td>{client.email}</td>
                                 <td>{client.industry}</td>
                                 <td>
-                                    <a
+                                    <Link
                                         href={route(
-                                            `client/`,
+                                            `client`,
                                             client.client_pin
                                         )}
                                         active={route().current(
-                                            `client/`,
+                                            `client`,
                                             client.client_pin
                                         )}
                                     >
@@ -73,7 +74,7 @@ export default function Client({ auth, clients }) {
                                             {" "}
                                             View More
                                         </button>
-                                    </a>
+                                    </Link>
                                 </td>
                             </tr>
                         ))

@@ -32,16 +32,19 @@ class EmployeeController extends Controller
 
     public function create(Request $request)
     {
+       
         try {
-            Employee::create(
-                $request->validate([
-                    'name' => ['required', 'string', 'max:255'],
-                    'email' => ['required', 'string', 'email', 'max:255', 'unique:employees'],
-                    'contact' => ['required', 'string', 'max:20'],
-                    'address' => ['required', 'string', 'max:255'],
-                    'password' => ['required']
-                ])
-            );
+            $validatedData = $request->validate([
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:employees'],
+                'contact' => ['required', 'string', 'max:20'],
+                'address' => ['required', 'string', 'max:255'],
+                'password' => ['required']
+            ]);
+
+            $validatedData['password'] = bcrypt($validatedData['password']);
+
+            Employee::create($validatedData);
         } catch (Exception $e) {
             dd($e->getMessage());
         }
