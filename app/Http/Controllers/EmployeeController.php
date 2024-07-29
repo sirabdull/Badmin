@@ -13,12 +13,12 @@ class EmployeeController extends Controller
 
 
     public function index()
-    { 
+    {
         return Inertia::render('Employee', [
             'auth' => [
                 'user' => auth()->user()
             ],
-            'employees' => Employee::all() 
+            'employees' => Employee::all()
         ]);
     }
 
@@ -29,27 +29,41 @@ class EmployeeController extends Controller
      * @param \Illuminate\Http\Request $request
      * 
      */
-   
+
     public function create(Request $request)
-    { 
-        try{
-       Employee::create(
-        $request->validate([
-            'name' => ['required','string','max:255'],
-            'email' => ['required','string','email','max:255','unique:employees'],
-            'contact' => ['required','string','max:20'],
-            'address' => ['required','string','max:255'],
-            'password' => ['required']
-        ]));
-        }catch(Exception $e){
-             dd($e->getMessage());
-          }
-      
-          return to_route('employee');
+    {
+        
+       
+        try {
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'salary' => 'required|numeric|min:0',
+                'email' => 'required|email|unique:employees,email',
+                'password' => 'required|string|min:8',
+                'image' => 'nullable|image|max:2048',
+                'token' => 'nullable|string',
+                'role' => 'required|string',
+                'skills' => 'nullable|string',
+                'deployment' => 'nullable|string',
+                'employment_type' => 'required|string',
+                'contact' => 'required|string',
+                'address' => 'required|string',
+                'salary_bank' => 'required|string',
+                'salary_account' => 'required|string',
+            ]);          
+
+            $validatedData['password'] = bcrypt($validatedData['password']);
+
+            Employee::create($validatedData);
+        } catch (Exception $e) {
+            dd($e->getMessage());
+        }
+
+        return to_route('employee');
     }
 
-    public function delete( Request $request , $id)
-    { 
+    public function delete(Request $request, $id)
+    {
         Employee::find($id)->delete();
     }
 }

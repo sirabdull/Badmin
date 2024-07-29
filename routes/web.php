@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -18,7 +19,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('Dashboard', [
             'auth' => [
                 'user' => auth()->user(),
-            ],             'employees' => Employee::all(),
+            ],    
+            'employees' => Employee::all(),
             'messages' => Contacts::orderBy('created_at', 'desc')->take(3)->get(), 
             //'services' => Services::latest(1) 
             'services' =>Services::orderBy('created_at', 'desc')->take(3)->get()
@@ -29,33 +31,46 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-
-
-    Route::get('/client', function () {
+    Route::get('/clients', function () {
         return Inertia::render('Client', [
             'auth' => [
                 'user' => auth()->user(),
             ],
             'clients' => Clients::all()
         ]);
-    })->name('client');
+    })->name('clients');
 
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/plan', function () {
-        return Inertia::render('Plan', [
+
+Route::middleware(['auth'])->group(function () {
+
+
+  Route::get('client/{pin}', function ($pin) {
+
+ 
+
+        return Inertia::render('ClientDetail', [
             'auth' => [
                 'user' => auth()->user(),
             ],
             'plans' => Plans::all(),
             'plugins' => Plugins::all()
         ]);
-    })->name('plan');
-});
+     })->name('client')
+     ;
+
+ });
 
 
-Route::middleware('auth')->group(function () {
+
+
+
+
+
+
+Route::middleware('auth')->group(function () {#
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -73,6 +88,21 @@ Route::group(['middleware '=> 'auth', 'prefix'=> 'employee'], function () {
     Route::post('/delete/{id}', [EmployeeController::class, 'delete']);
     Route::post('/update/{id}', [EmployeeController::class, 'update']);
     Route::post('/create', [EmployeeController::class, 'create']);
+
+}); 
+
+
+/**
+ * ------------------------------------------------------------
+ * PLAN ROUTE GROUPS 
+ * ------------------------------------------------------------
+ */
+Route::group(['middleware '=> 'auth'], function () {
+
+    Route::get('/plan', [PlanController::class, 'index'])->name('plan');
+    Route::post('/{id}', [PlanController::class, 'delete'])->name('plan.delete');
+    Route::post('/update/{id}', [PlanController::class, 'update'])->name('edit');
+    Route::post('/plan/create', [PlanController::class, 'create'])->name('plan.create');
 
 }); 
 
