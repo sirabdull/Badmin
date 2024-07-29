@@ -1,8 +1,9 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { useState } from "react";
 import styles from '../../css/plan.module.css';
+import Plugin from "@/Components/Plugin";
 
-export default function Plan({ auth, plans: initialPlans }) {
+export default function Plan({ auth, plans: initialPlans, plugins: initialPlugins }) {
     const [plans, setPlans] = useState(initialPlans);
     const [newPlan, setNewPlan] = useState({ plan_name: '', description: '', amount: '', paystack_plan_code: '', plan_type: '', active: true });
 
@@ -10,7 +11,6 @@ export default function Plan({ auth, plans: initialPlans }) {
         e.preventDefault();
         // Add your API here to add a plan
         // setPlans([...plans, response.data]);
-        // Reset the form
         setNewPlan({ plan_name: '', description: '', amount: '', paystack_plan_code: '', plan_type: '', active: true });
     };
 
@@ -96,6 +96,8 @@ export default function Plan({ auth, plans: initialPlans }) {
                     <button type="submit" className={styles.addButton}>Add Plan</button>
                 </form>
             </div>
+
+            <Plugin plugins={initialPlugins} />
         </AuthenticatedLayout>
     );
 }

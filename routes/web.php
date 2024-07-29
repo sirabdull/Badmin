@@ -10,6 +10,7 @@ use App\Models\Contacts;
 use App\Models\Services;
 use App\Models\Clients;
 use App\Models\Plans;
+use App\Models\Plugins;
 
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -47,7 +48,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'auth' => [
                 'user' => auth()->user(),
             ],
-            'plans' => Plans::all()
+            'plans' => Plans::all(),
+            'plugins' => Plugins::all()
         ]);
     })->name('plan');
 });
