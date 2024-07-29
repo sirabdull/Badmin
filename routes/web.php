@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -62,19 +63,12 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-    Route::get('/plan', function () {
-        return Inertia::render('Plan', [
-            'auth' => [
-                'user' => auth()->user(),
-            ],
-            'plans' => Plans::all()
-        ]);
-    })->name('plan');
 
 
 
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth')->group(function () {#
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -92,6 +86,21 @@ Route::group(['middleware '=> 'auth', 'prefix'=> 'employee'], function () {
     Route::post('/delete/{id}', [EmployeeController::class, 'delete']);
     Route::post('/update/{id}', [EmployeeController::class, 'update']);
     Route::post('/create', [EmployeeController::class, 'create']);
+
+}); 
+
+
+/**
+ * ------------------------------------------------------------
+ * PLAN ROUTE GROUPS 
+ * ------------------------------------------------------------
+ */
+Route::group(['middleware '=> 'auth'], function () {
+
+    Route::get('/plan', [PlanController::class, 'index'])->name('plan');
+    Route::post('/{id}', [PlanController::class, 'delete'])->name('plan.delete');
+    Route::post('/update/{id}', [PlanController::class, 'update'])->name('edit');
+    Route::post('/plan/create', [PlanController::class, 'create'])->name('plan.create');
 
 }); 
 

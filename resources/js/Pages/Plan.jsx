@@ -1,22 +1,31 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { useState } from "react";
 import styles from '../../css/plan.module.css';
+import { router, usePage } from '@inertiajs/react';
 
 export default function Plan({ auth, plans: initialPlans }) {
     const [plans, setPlans] = useState(initialPlans);
-    const [newPlan, setNewPlan] = useState({ plan_name: '', description: '', amount: '', paystack_plan_code: '', plan_type: '', active: true });
+    const [newPlan, setNewPlan] = useState({ plan_name: '', description: '', amount: '' });
+    const { flash, errors } = usePage().props;
 
     const handleAddPlan = async (e) => {
         e.preventDefault();
-        // Add your API here to add a plan
-        // setPlans([...plans, response.data]);
-        // Reset the form
-        setNewPlan({ plan_name: '', description: '', amount: '', paystack_plan_code: '', plan_type: '', active: true });
+        router.post(route('plan.create'), newPlan, {
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                setNewPlan({ name: '', description: '', price: '' });
+            },
+        });
     };
 
     const handleDeletePlan = async (id) => {
-        // Add your API here to delete a plan
-        // setPlans(plans.filter(plan => plan.id !== id));
+        if (confirm('Are you sure you want to delete this plan?')) {
+            router.post(route('plan.delete', id), {}, {
+                preserveState: true,
+                preserveScroll: true,
+            });
+        }
     };
 
     return (
@@ -29,6 +38,8 @@ export default function Plan({ auth, plans: initialPlans }) {
             }
         >
             <div className={styles.container}>
+                {flash.success && <div className={styles.flashMessages}>{flash.success}</div>}
+                
                 <h3>Plans List</h3>
                 <table className={styles.table}>
                     <thead>
@@ -36,9 +47,7 @@ export default function Plan({ auth, plans: initialPlans }) {
                             <th>ID</th>
                             <th>Name</th>
                             <th>Description</th>
-                            <th>Amount</th>
-                            <th>Type</th>
-                            <th>Status</th>
+                            <th>Price</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -49,8 +58,6 @@ export default function Plan({ auth, plans: initialPlans }) {
                                 <td>{plan.plan_name}</td>
                                 <td>{plan.description}</td>
                                 <td>{plan.amount}</td>
-                                <td>{plan.plan_type}</td>
-                                <td>{plan.active ? 'Active' : 'Inactive'}</td>
                                 <td>
                                     <button onClick={() => handleDeletePlan(plan.id)} className={styles.deleteButton}>Delete</button>
                                 </td>
@@ -68,31 +75,22 @@ export default function Plan({ auth, plans: initialPlans }) {
                         onChange={(e) => setNewPlan({ ...newPlan, plan_name: e.target.value })} 
                         required 
                     />
+                    {errors.plan_name && <div className={styles.error}>{errors.plan_name}</div>}
                     <input 
                         type="text" 
                         placeholder="Description" 
                         value={newPlan.description} 
                         onChange={(e) => setNewPlan({ ...newPlan, description: e.target.value })} 
                     />
+                    {errors.description && <div className={styles.error}>{errors.description}</div>}
                     <input 
                         type="number" 
-                        placeholder="Amount" 
+                        placeholder="Price" 
                         value={newPlan.amount} 
                         onChange={(e) => setNewPlan({ ...newPlan, amount: e.target.value })} 
                         required 
                     />
-                    <input 
-                        type="text" 
-                        placeholder="Paystack Code" 
-                        value={newPlan.paystack_plan_code} 
-                        onChange={(e) => setNewPlan({ ...newPlan, paystack_plan_code: e.target.value })} 
-                    />
-                    <input 
-                        type="text" 
-                        placeholder="Plan Type" 
-                        value={newPlan.plan_type} 
-                        onChange={(e) => setNewPlan({ ...newPlan, plan_type: e.target.value })} 
-                    />
+                    {errors.amoun && <div className={styles.error}>{errors.amount}</div>}
                     <button type="submit" className={styles.addButton}>Add Plan</button>
                 </form>
             </div>
